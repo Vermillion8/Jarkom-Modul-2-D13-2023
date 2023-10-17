@@ -256,7 +256,7 @@ Kemudian gunakan algoritma **Round Robin** untuk Load Balancer pada **Arjuna**. 
  	access_log /var/log/nginx/jarkom_access.log;
   }
   ```
-  Port (Wajib disesuaikan dengan Node nya masing masing):
+  Port (Wajib disesuaikan dengan Node nya masing masing):<br>
   - Abimanyu:8001
   - Prabakusuma:8002
   - Wisanggeni:8003
@@ -304,6 +304,12 @@ Kemudian gunakan algoritma **Round Robin** untuk Load Balancer pada **Arjuna**. 
   ```
   rm -rf /etc/nginx/sites-enabled/default
   ```
+  Abimanyu<br>
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/10_abi.png)
+  Prabakusuma<br>
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/10_praba.png)
+  Wisanggeni<br>
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/10_wisang.png)
 ## Soal 11
 Selain menggunakan Nginx, lakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server **www.abimanyu.yyy.com**. Pertama dibutuhkan web server dengan DocumentRoot pada /var/www/abimanyu.yyy
 ### Penyelesaian
@@ -341,6 +347,7 @@ Selain menggunakan Nginx, lakukan konfigurasi Apache Web Server pada worker Abim
   ```
   service apache2 restart
   ```
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/11.png)
 ## Soal 12
 Setelah itu ubahlah agar url **www.abimanyu.yyy.com/index.php/home** menjadi **www.abimanyu.yyy.com/home**.
 ### Penyelesaian
@@ -368,7 +375,7 @@ Setelah itu ubahlah agar url **www.abimanyu.yyy.com/index.php/home** menjadi **w
   ```
   service apache2 restart
   ```
-  
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/12.png)
 ## Soal 13
 Selain itu, pada subdomain **www.parikesit.abimanyu.yyy.com**, DocumentRoot disimpan pada /var/www/parikesit.abimanyu.yyy
 ### Penyelesaian
@@ -398,6 +405,7 @@ Selain itu, pada subdomain **www.parikesit.abimanyu.yyy.com**, DocumentRoot disi
   ```
   service apache2 restart
   ```
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/13.png)
 ## Soal 14
 Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses (403 Forbidden).
 ### Penyelesaian
@@ -433,6 +441,10 @@ Pada subdomain tersebut folder /public hanya dapat melakukan directory listing s
   ```
   service apache2 restart
   ```
+  /public<br>
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/14_public.png)
+  /secret<br>
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/14_secret.png)
 ## Soal 15
 Buatlah kustomisasi halaman error pada folder /error untuk mengganti error kode pada Apache. Error kode yang perlu diganti adalah 404 Not Found dan 403 Forbidden.
 ### Penyelesaian
@@ -464,6 +476,12 @@ Buatlah kustomisasi halaman error pada folder /error untuk mengganti error kode 
   ```
   service apache2 restart
   ```
+  404 Not Found<br>
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/15_notfound.png)
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/15_notfound_result.png)
+  403 Forbidden<br>
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/15_secret.png)
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/15_secret_result.png)
 ## Soal 16
 Buatlah suatu konfigurasi virtual host agar file asset **www.parikesit.abimanyu.yyy.com/public/js** menjadi 
 **www.parikesit.abimanyu.yyy.com/js**
@@ -494,23 +512,33 @@ Buatlah suatu konfigurasi virtual host agar file asset **www.parikesit.abimanyu.
 	CustomLog ${APACHE_LOG_DIR}/access.log combined
   </Virtualhost>
   ```
+  ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/16.png)
 ## Soal 17
 Agar aman, buatlah konfigurasi agar **www.rjp.baratayuda.abimanyu.yyy.com** hanya dapat diakses melalui port 14000 dan 14400.
 
 ### Penyelesaian
 
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/17_14000.png)
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/17_14400.png)
 ## Soal 18
 Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
 
 ### Penyelesaian
 
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14000.png)
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14000_result.png)
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14400_pass.png)
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14400_result.png)
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14400_username.png)
 ## Soal 19
 Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke **www.abimanyu.yyy.com (alias)**
 ### Penyelesaian
 
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/19.png)
 ## Soal 20
 Karena website** www.parikesit.abimanyu.yyy.com** semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
 
 ### Penyelesaian
 
-![No Image]()
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/20.png)
+![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/20_result.png)
