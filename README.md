@@ -187,3 +187,16 @@ zone "baratayuda.abimanyu.d13.com" {
 	file "/etc/bind/delegasi/baratayuda.abimanyu.d13.com";
 };
 ```
+
+> _named.conf.options_ pada **Werkudara**
+
+```vim
+options {
+        directory "/var/cache/bind";
+
+	//dnssec-validation auto;
+	allow-query{any;};
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+```
