@@ -201,25 +201,144 @@ zone "baratayuda.abimanyu.d13.com" {
 
 ```vim
 options {
-        directory "/var/cache/bind";
-
-	//dnssec-validation auto;
-	allow-query{any;};
-        auth-nxdomain no;    # conform to RFC1035
-        listen-on-v6 { any; };
+    directory "/var/cache/bind";
+    //dnssec-validation auto;
+    allow-query{any;};
+    auth-nxdomain no;    # conform to RFC1035
+    listen-on-v6 { any; };
 };
 ```
+
+> _/etc/bind/delegasi/baratayuda.abimanyu.d13.com_ pada **Werkudara**
+
+```vim
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     baratayuda.abimanyu.d13.com. root.baratayuda.abimanyu.d13.com. (
+                     2023101101         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@	IN	NS      baratayuda.abimanyu.d13.com.
+@	IN	A       10.28.3.4	;IP AbimanyuWebServer
+www	IN	CNAME	baratayuda.abimanyu.d13.com.
+rjp	IN	A	10.28.3.4	;IP AbimanyuWebServer
+www.rjp	IN	CNAME	rjp
+```
+
 ## Soal 6
+Agar dapat tetap dihubungi ketika DNS Server Yudhistira bermasalah, buat juga Werkudara sebagai DNS Slave untuk domain utama.
 
 ### Penyelesaian
+
+> _named.conf.local_ pada **Werkudara**
+
+```vim
+zone "arjuna.d13.com" {
+	type slave;
+	masters { 10.28.2.2; }; // Masukan IP	Yudhistira
+	file "/var/lib/bind/arjuna.d13.com";
+};
+
+zone "abimanyu.d13.com" {
+	type slave;
+	masters { 10.28.2.2; }; // Masukan IP	Yudhistira
+	file "/var/lib/bind/abimanyu.d13.com";
+};
+```
+`Address arjuna.d13.com dan abimanyu.d13.com sudah di-setting pada DNS Slave Werkudara`
 
 ## Soal 7
+Seperti yang kita tahu karena banyak sekali informasi yang harus diterima, buatlah subdomain khusus untuk perang yaitu **baratayuda.abimanyu.yyy.com** dengan alias **www.baratayuda.abimanyu.yyy.com** yang didelegasikan dari Yudhistira ke Werkudara dengan IP menuju ke Abimanyu dalam folder Baratayuda.
 
 ### Penyelesaian
+
+> bikin folder baru di **Werudara**
+
+```vim
+mkdir /etc/bind/baratayuda
+
+cp /etc/bind/db.local /etc/bind/baratayuda/baratayuda.abimanyu.d13.com
+```
+
+`Pertama kita bikin folder baratayuda sebagai folder delegasi di /etc/bind, lalu copy db.local ke folder baratayuda`
+
+> _Abimanyu Zone_ pada **Yudhistira**
+
+```vim
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     abimanyu.d13.com. root.abimanyu.d13.com. (
+                     2023101101         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       	IN      NS      abimanyu.d13.com.
+@       	IN      A       10.28.3.4	;IP AbimanyuWebServer
+www		IN	CNAME	abimanyu.d13.com.
+parikesit	IN	A	10.28.3.4	;IP AbimanyuWebServer
+ns1		IN	A	10.28.3.4	;IP AbimanyuWebServer
+baratayuda	IN	NS	ns1
+@       	IN      AAAA    ::1
+```
+
+`Pada zone abimanyu di Yudhistira, dicantumkan delegasi baratayuda yang mengarah ke node Abimanyu`
+
+> _/etc/bind/delegasi/baratayuda.abimanyu.d13.com_ pada **Werkudara**
+
+```vim
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     baratayuda.abimanyu.d13.com. root.baratayuda.abimanyu.d13.com. (
+                     2023101101         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@	IN	NS      baratayuda.abimanyu.d13.com.
+@	IN	A       10.28.3.4	;IP AbimanyuWebServer
+www	IN	CNAME	baratayuda.abimanyu.d13.com.
+```
+
+`Pada zone baratayuda di Werkudara, dicantumkan NS baratayuda yang mengarah ke node Abimanyu`
 
 ## Soal 8
 
+Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses **rjp.baratayuda.abimanyu.yyy.com** dengan alias **www.rjp.baratayuda.abimanyu.yyy.com** yang mengarah ke Abimanyu.
+
 ### Penyelesaian
+
+```vim
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     baratayuda.abimanyu.d13.com. root.baratayuda.abimanyu.d13.com. (
+                     2023101101         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@	IN	NS      baratayuda.abimanyu.d13.com.
+@	IN	A       10.28.3.4	;IP AbimanyuWebServer
+www	IN	CNAME	baratayuda.abimanyu.d13.com.
+rjp	IN	A	10.28.3.4	;IP AbimanyuWebServer
+www.rjp	IN	CNAME	rjp
+```
+
+`Pada zone baratayuda di Werkudara, dicantumkan A rjp yang mengarah ke node Abimanyu dan CNAME www.rjp yang mengarah ke rjp`
 
 ## Soal 9
 Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.
@@ -586,6 +705,7 @@ Agar aman, buatlah konfigurasi agar **www.rjp.baratayuda.abimanyu.yyy.com** hany
   ```
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/17_14000.png)
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/17_14400.png)
+
 ## Soal 18
 Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
 
