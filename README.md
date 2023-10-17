@@ -211,8 +211,6 @@ zone "baratayuda.abimanyu.d13.com" {
 ## Soal 9
 Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.
 
-### Penyelesaian
-
 ## Soal 10
 Kemudian gunakan algoritma **Round Robin** untuk Load Balancer pada **Arjuna**. Gunakan server_name pada soal nomor 1. Untuk melakukan pengecekan akses alamat web tersebut kemudian pastikan worker yang digunakan untuk menangani permintaan akan berganti ganti secara acak. Untuk webserver di masing-masing worker wajib berjalan di port 8001-8003. Contoh
     - Prabakusuma:8001
@@ -517,14 +515,125 @@ Buatlah suatu konfigurasi virtual host agar file asset **www.parikesit.abimanyu.
 Agar aman, buatlah konfigurasi agar **www.rjp.baratayuda.abimanyu.yyy.com** hanya dapat diakses melalui port 14000 dan 14400.
 
 ### Penyelesaian
+- Pertama, pada Node **Abimanyu** download file requirement yaitu rjp.baratayuda.abimanyu.yyy.com.zip dengan perintah
+  ```
+  wget -O baratayuda.zip 'https://drive.google.com/uc?export=download&id=1pPSP7yIR05JhSFG67RVzgkb-VcW9vQO6'
+  ```
+  lalu unzip file ```unzip baratayuda.zip```, lalu pindah dan hapus file zip nya ```mv rjp.baratayuda.abimanyu.yyy.com /var/www/rjp.baratayuda.abimanyu.d13``` ```rm baratayuda.zip```
+- Kedua, edit isi file di direktori ```/etc/apache2/sites-available/rjp.baratayuda.abimanyu.d13.com.conf``` seperti dibawah ini
+  ```
+  <VirtualHost *:14000>
+	ServerName rjp.baratayuda.abimanyu.d13.com
+	        
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/rjp.baratayuda.abimanyu.d13
+	ServerAlias http://www.rjp.baratayuda.abimanyu.d13.com
+		
+	<Directory /var/www/rjp.baratayuda.abimanyu.d13>
+		Options +Indexes
+	</Directory>
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</Virtualhost>
+  <VirtualHost *:14400>
+	ServerName rjp.baratayuda.abimanyu.d13.com
+	        
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/rjp.baratayuda.abimanyu.d13
+	ServerAlias http://www.rjp.baratayuda.abimanyu.d13.com
+		
+	<Directory /var/www/rjp.baratayuda.abimanyu.d13>
+		Options +Indexes
+	</Directory>
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+  </Virtualhost>
+  ```
+- Ketiga, edit isi file di direktori ```/etc/apache2/ports.conf```
+  ```
+  Listen 14000
+  Listen 14400
+  Listen 80
 
+  <IfModule ssl_module>
+        Listen 443
+  </IfModule>
+
+  <IfModule mod_gnutls.c>
+        Listen 443
+  </IfModule>
+  ```
+- Keempat, aktifkan konfigurasi menggunakan perintah a2ensite
+  ```
+  a2ensite rjp.baratayuda.abimanyu.d13.com
+  ```
+- Kelima, lakukan restart pada apache2
+  ```
+  service apache2 restart
+  ```
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/17_14000.png)
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/17_14400.png)
 ## Soal 18
 Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
 
 ### Penyelesaian
-
+- Pertama, edit isi file di direktori ```/etc/apache2/sites-available/rjp.baratayuda.abimanyu.d13.com.conf``` seperti dibawah ini
+  ```
+  <VirtualHost *:14000>
+	ServerName rjp.baratayuda.abimanyu.d13.com
+	        
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/rjp.baratayuda.abimanyu.d13
+	ServerAlias http://www.rjp.baratayuda.abimanyu.d13.com
+		
+	<Directory /var/www/rjp.baratayuda.abimanyu.d13>
+		Options +Indexes
+	</Directory>
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+	
+	<Location />
+	 	AuthType Basic
+	 	AuthName “Restricted Area”
+	 	AuthUserFile /etc/apache2/.htpasswd
+	 \	Require valid-user
+	</Location>
+	</Virtualhost>
+  <VirtualHost *:14400>
+	ServerName rjp.baratayuda.abimanyu.d13.com
+	        
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/rjp.baratayuda.abimanyu.d13
+	ServerAlias http://www.rjp.baratayuda.abimanyu.d13.com
+		
+	<Directory /var/www/rjp.baratayuda.abimanyu.d13>
+		Options +Indexes
+	</Directory>
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+	
+	<Location />
+	 	AuthType Basic
+	 	AuthName “Restricted Area”
+	 	AuthUserFile /etc/apache2/.htpasswd
+	 	Require valid-user
+	</Location>
+	</Virtualhost>
+  ```
+- Kedua, jalankan perintah untuk menambahkan username dan password(autentikasi)
+  ```
+  htpasswd -c -B -b /etc/apache2/.htpasswd Wayang baratayudad13
+  ```
+- Ketiga, jalankan perintah dibawah
+  ```
+  a2enmod authn_core
+  a2enmod auth_basic
+  a2enmod authn_file 
+  ```
+- Keempat, lakukan restart pada apache2
+  ```
+  service apache2 restart
+  ```
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14000.png)
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14000_result.png)
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/18_14400_pass.png)
@@ -533,12 +642,80 @@ Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password
 ## Soal 19
 Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke **www.abimanyu.yyy.com (alias)**
 ### Penyelesaian
-
+- Pertama, edit isi file di direktori ```/etc/apache2/sites-available/abimanyu.d13.com.conf``` seperti dibawah ini
+  ```
+  <VirtualHost *:80>
+	ServerName abimanyu.d13.com
+	        
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/abimanyu.d13
+	ServerAlias www.abimanyu.d13.com
+	<Directory /var/www/abimanyu.d13.com/home>
+	Options +Indexes
+	</Directory>
+	Redirect permanent /index.php/home http://www.abimanyu.d13.com/home/
+	Redirect permanent /10.28.3.4/ https://www.abimanyu.d14.com
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+  </Virtualhost>
+  ```
+- Kedua, aktifkan konfigurasi
+   ```
+  a2dissite 000-default.conf
+  ```
+- Ketiga, lakukan restart pada apache2
+  ```
+  service apache2 restart
+  ```
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/19.png)
 ## Soal 20
 Karena website** www.parikesit.abimanyu.yyy.com** semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
 
 ### Penyelesaian
+- Pertama, jalankan perintah dibawah
+  ```
+  a2enmod rewrite
+  service apache2 restart
+  ```
+- Kedua, buatlah file dengan direktori ```/var/www/parikesit.abimanyu.d13/.htaccess```, lalu isi dengan code berikut
+  ```
+  RewriteEngine On
+  RewriteCond %{REQUEST_URI} ^/public/images/(.*)(abimanyu)(.*\.(png|jpg))
+  RewriteCond %{REQUEST_URI} !/public/images/abimanyu.png
+  RewriteRule abimanyu http://parikesit.abimanyu.d13.com/public/images/abimanyu.png$1 [L,R=301]
+  ```
+- Ketiga, edit isi file di direktori ```/etc/apache2/sites-available/parikesit.abimanyu.d13.com.conf``` dengan
+  ```
+  <VirtualHost *:80>
+        ServerName parikesit.abimanyu.d13.com
 
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/parikesit.abimanyu.d13
+        ServerAlias http://www.parikesit.abimanyu.d13.com
+
+        <Directory /var/www/parikesit.abimanyu.d13/public>
+                Options +Indexes
+        </Directory>
+        <Directory /var/www/parikesit.abimanyu.d13/secret>
+                Options -Indexes +FollowSymLinks
+        </Directory>
+        <Directory /var/www/parikesit.abimanyu.d13>
+		Options +FollowSymLinks -Multiviews
+          	AllowOverride All
+        </Directory>
+
+        ErrorDocument 403 /error/403.html
+        ErrorDocument 404 /error/404.html
+
+        Alias /js /var/www/parikesit.abimanyu.d13/public/js
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+  </Virtualhost>
+  ```
+- Keempat, lakukan restart pada apache2
+  ```
+  service apache2 restart
+  ```  
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/20.png)
 ![No Image](https://github.com/Vermillion8/Jarkom-Modul-2-D13-2023/blob/main/images/20_result.png)
